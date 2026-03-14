@@ -8,6 +8,7 @@ public interface ITerminalBuffer {
     void insertText(String text);
     void fillLine(char character);
     String getScreenContent();
+    void clearScreen();
     
     // scrollback operations
     int getScrollBackMaxSize();

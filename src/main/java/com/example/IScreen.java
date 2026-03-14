@@ -8,4 +8,5 @@ public interface IScreen {
     char insertCell(char character, int row, int col);
     void fillLine(char character, int row);
     String getScreenString();
+    void clearScreen();
 }

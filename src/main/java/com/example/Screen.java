@@ -65,4 +65,12 @@ public class Screen implements IScreen{
         return lastCell.getCharacter();
     }
 
+    @Override
+    public void clearScreen() {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                this.grid[row][col].resetCell();
+            }
+        }
+    }
 }

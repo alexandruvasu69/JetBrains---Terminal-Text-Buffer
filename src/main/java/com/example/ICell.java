@@ -6,4 +6,6 @@ public interface ICell {
     void setCharacter(char character);
 
     boolean isEmpty();
+
+    void resetCell();
 }

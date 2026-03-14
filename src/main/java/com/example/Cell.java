@@ -1,7 +1,8 @@
 package com.example;
 
 public class Cell implements ICell {
-    private char character = ' ';
+    private static char EMTPTY_CHAR = ' ';
+    private char character = EMTPTY_CHAR;
 
     public Cell() {}
 
@@ -22,6 +23,11 @@ public class Cell implements ICell {
     @Override
     public boolean isEmpty() {
         return character == ' ';
+    }
+
+    @Override
+    public void resetCell() {
+        this.character = EMTPTY_CHAR;
     }
 
     public static ICell cloneFrom(ICell cell) {

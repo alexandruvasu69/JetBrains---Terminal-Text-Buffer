@@ -67,6 +67,11 @@ public class TerminalBuffer implements ITerminalBuffer{
         return screen.getScreenString();
     }
 
+    @Override
+    public void clearScreen() {
+        screen.clearScreen();
+    }
+
     // scrollback operations
     @Override
     public int getScrollBackMaxSize() {
