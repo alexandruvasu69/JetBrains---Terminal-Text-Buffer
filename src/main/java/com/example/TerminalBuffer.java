@@ -3,12 +3,12 @@ package com.example;
 public class TerminalBuffer implements ITerminalBuffer{
     private IScreen screen;
     private ICursor cursor;
-    private int scrollBackMaxSize; 
+    private IScrollback scrollback; 
     private CellAttributes cellAttributes;
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize) {
         this.screen = new Screen(width, height);
-        this.scrollBackMaxSize = scrollBackMaxSize;
+        this.scrollback = new Scrollback(scrollBackMaxSize, width);
         this.cellAttributes = CellAttributes.getDefaultAttributes();
         this.cursor = new Cursor(height - 2, width - 7);
     }
@@ -77,7 +77,7 @@ public class TerminalBuffer implements ITerminalBuffer{
     // scrollback operations
     @Override
     public int getScrollBackMaxSize() {
-        return scrollBackMaxSize;
+        return scrollback.getMaxSize();
     }
 
     // global operations
