@@ -46,4 +46,23 @@ public class Screen implements IScreen{
 
         return sb.toString();
     }
+
+    @Override
+    public void writeCell(char character, int row, int col) {
+        this.grid[row][col].setCharacter(character);
+    }
+
+    @Override
+    public char insertCell(char character, int row, int col) {
+        ICell lastCell = Cell.cloneFrom(grid[row][width-1]);
+
+        for (int indexCol = width - 1; indexCol > col; indexCol--) {
+            grid[row][indexCol] = Cell.cloneFrom(grid[row][indexCol - 1]);
+        }
+
+        grid[row][col].setCharacter(character);
+
+        return lastCell.getCharacter();
+    }
+
 }
