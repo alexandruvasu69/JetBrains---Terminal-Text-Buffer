@@ -1,6 +1,6 @@
 package com.example;
 
-public enum TerminalColor {
+public enum Color {
     RED,
     GREEN,
     BLUE,
@@ -10,6 +10,7 @@ public enum TerminalColor {
     VIOLET,
     GREY,
     MAROON,
+    WHITE,
     BLACK,
     OLIVE,
     CYAN,
@@ -17,4 +18,12 @@ public enum TerminalColor {
     MAGENTA,
     TAN,
     TEAL;
+
+    public static Color getDefaultForeground() {
+        return WHITE;
+    }
+
+    public static Color getDefaultBackground() {
+        return BLACK;
+    }
 }
