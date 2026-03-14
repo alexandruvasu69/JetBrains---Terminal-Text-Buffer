@@ -22,6 +22,7 @@ public class TerminalBuffer implements ITerminalBuffer{
     }
 
 
+    // screen operations
     @Override
     public int getWidth() {
         return screen.getWidth();
@@ -33,10 +34,42 @@ public class TerminalBuffer implements ITerminalBuffer{
     }
 
     @Override
+    public void writeText(String text) {
+    }
+
+    @Override
+    public void insertText(String text) {
+        for (char c : text.toCharArray()) {
+            insertChar(c, cursor.getRowPosition(), cursor.getColumnPosition());
+        }
+    }
+
+    private void insertChar(char c, int row, int col) {
+        char lastChar = screen.insertCell(c, row, col);
+
+        if ((lastChar != ' ') && !isColOutOfBounds(col)) {
+            insertChar(lastChar, row + 1, 0);
+        }
+    }
+
+    @Override
+    public void fillLine(char character) {
+        int currentRow = this.cursor.getRowPosition();
+        screen.fillLine(character, currentRow);
+    }
+
+    @Override
+    public String getScreenContent() {
+        return screen.getScreenString();
+    }
+
+    // scrollback operations
+    @Override
     public int getScrollBackMaxSize() {
         return scrollBackMaxSize;
     }
 
+    // global operations
     @Override
     public void setForegroundColor(TerminalColor foregroundColor) {
         this.foregroundColor = foregroundColor;
@@ -52,16 +85,8 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.textStyle = textStyle;
     }
 
-    @Override
-    public void fillLine(char character) {
-        int row = cursor.getRowPosition();
-        screen.fillLine(character, row);
+    // helpers
+    private boolean isColOutOfBounds(int col) {
+        return col >= screen.getHeight() || col < 0; 
     }
-
-    @Override
-    public String getScreenContent() {
-        return screen.getScreenString();
-    }
-
-    
 }
