@@ -14,8 +14,8 @@ public interface ITerminalBuffer {
     int getScrollBackMaxSize();
 
     // style operations
-    void setForegroundColor(TerminalColor color); 
-    void setBackgroundColor(TerminalColor color);
+    void setForegroundColor(Color color); 
+    void setBackgroundColor(Color color);
     void setTextStyle(TextStyle style);
 
     // cursor operations

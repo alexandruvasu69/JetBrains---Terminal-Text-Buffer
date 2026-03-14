@@ -4,15 +4,12 @@ public class TerminalBuffer implements ITerminalBuffer{
     private IScreen screen;
     private ICursor cursor;
     private int scrollBackMaxSize; 
-    private TerminalColor foregroundColor;
-    private TerminalColor backgroundColor;
-    private TextStyle textStyle;
+    private CellAttributes cellAttributes;
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize) {
         this.screen = new Screen(width, height);
         this.scrollBackMaxSize = scrollBackMaxSize;
-        this.foregroundColor = TerminalColor.BLACK;
-        this.backgroundColor = TerminalColor.BLACK;
+        this.cellAttributes = CellAttributes.getDefaultAttributes();
         this.cursor = new Cursor(height - 2, width - 7);
     }
 
@@ -34,32 +31,35 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public void writeText(String text) {
+        CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes); 
         for (char c : text.toCharArray()) {
-            screen.writeCell(c, cursor.getRowPosition(), cursor.getColumnPosition());
+            screen.writeCell(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
             moveCursorNext();
         }
     }
 
     @Override
     public void insertText(String text) {
+        CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
         for (char c : text.toCharArray()) {
-            insertChar(c, cursor.getRowPosition(), cursor.getColumnPosition());
+            insertChar(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
             moveCursorNext();
         }
     }
 
-    private void insertChar(char c, int row, int col) {
-        char lastChar = screen.insertCell(c, row, col);
+    private void insertChar(char c, CellAttributes attributes, int row, int col) {
+        ICell lastCell = screen.insertCell(c, attributes, row, col);
 
-        if ((lastChar != ' ')  && !isPositionOutOfBounds(row, col)) {
-            insertChar(lastChar, row + 1, 0);
+        if (!(lastCell.isEmpty())  && !isPositionOutOfBounds(row + 1, col)) {
+            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), row + 1, 0);
         }
     }
 
     @Override
     public void fillLine(char character) {
         int currentRow = this.cursor.getRowPosition();
-        screen.fillLine(character, currentRow);
+        CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
+        screen.fillLine(character, attributes, currentRow);
     }
 
     @Override
@@ -80,18 +80,18 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // global operations
     @Override
-    public void setForegroundColor(TerminalColor foregroundColor) {
-        this.foregroundColor = foregroundColor;
+    public void setForegroundColor(Color foregroundColor) {
+        this.cellAttributes.setForegroundColor(foregroundColor);
     }
 
     @Override
-    public void setBackgroundColor(TerminalColor backgroundColor) {
-        this.backgroundColor = backgroundColor;
+    public void setBackgroundColor(Color backgroundColor) {
+        this.cellAttributes.setBackgroundColor(backgroundColor);
     }
 
     @Override
     public void setTextStyle(TextStyle textStyle) {
-        this.textStyle = textStyle;
+        this.cellAttributes.setTextStyle(textStyle);
     }
 
     // helpers
@@ -127,13 +127,13 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // cursor operations
     private void moveCursorNext() {
-        int col = cursor.getColumnPosition();
+        int row = cursor.getRowPosition();
 
         try {
             moveCursorRight(1);
         } catch(OutOfBoundsException e1) {
             try {
-                setCursorPosition(0, col + 1);
+                setCursorPosition(row + 1, 0);
             } catch (OutOfBoundsException e2) {
 
                 setCursorPosition(screen.getHeight() - 1, screen.getWidth() - 1);
@@ -153,7 +153,7 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public void moveCursorUp(int offset) throws OutOfBoundsException, OffsetValueException {
-        validateOffset(scrollBackMaxSize);
+        validateOffset(offset);
         int newRow = cursor.getRowPosition() - offset;
 
         validateRow(newRow);
@@ -164,7 +164,7 @@ public class TerminalBuffer implements ITerminalBuffer{
     @Override
     public void moveCursorLeft(int offset) throws OutOfBoundsException, OffsetValueException {
         validateOffset(offset);
-        int newCol = cursor.getColumnPosition() + offset;
+        int newCol = cursor.getColumnPosition() - offset;
 
         validateCol(newCol);
 
@@ -174,7 +174,7 @@ public class TerminalBuffer implements ITerminalBuffer{
     @Override
     public void moveCursorRight(int offset) throws OutOfBoundsException {
         validateOffset(offset);
-        int newCol = cursor.getColumnPosition() - offset;
+        int newCol = cursor.getColumnPosition() + offset;
 
         validateCol(newCol);
 

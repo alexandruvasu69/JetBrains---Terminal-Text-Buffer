@@ -18,9 +18,9 @@ public class Screen implements IScreen{
     }
 
     @Override
-    public void fillLine(char character, int row) {
+    public void fillLine(char character, CellAttributes attributes, int row) {
         for (int col = 0; col < width; col++) {
-            grid[row][col].setCharacter(character);
+            writeCell(character, attributes, row, col);
         }
     }
 
@@ -48,21 +48,23 @@ public class Screen implements IScreen{
     }
 
     @Override
-    public void writeCell(char character, int row, int col) {
+    public void writeCell(char character, CellAttributes attributes, int row, int col) {
         this.grid[row][col].setCharacter(character);
+        this.grid[row][col].setCellAttributes(attributes);
     }
 
     @Override
-    public char insertCell(char character, int row, int col) {
+    public ICell insertCell(char character, CellAttributes attributes, int row, int col) {
         ICell lastCell = Cell.cloneFrom(grid[row][width-1]);
 
         for (int indexCol = width - 1; indexCol > col; indexCol--) {
-            grid[row][indexCol] = Cell.cloneFrom(grid[row][indexCol - 1]);
+            grid[row][indexCol] = grid[row][indexCol - 1];
         }
 
-        grid[row][col].setCharacter(character);
+        ICell cell = new Cell(character, attributes);
+        this.grid[row][col] = cell;
 
-        return lastCell.getCharacter();
+        return lastCell;
     }
 
     @Override
