@@ -47,8 +47,14 @@ public class CellAttributes {
         return textStyle;
     }
 
-    public void setTextStyle(TextStyle textStyle) {
-        this.textStyle = textStyle;
+    public void setBold(boolean isBold) {
+        this.textStyle.setBold(isBold);
     }
-    
+
+    public void setItalic(boolean isItalic) {
+        this.textStyle.setItalic(isItalic);
+    }
+    public void setUnderline(boolean isUnderline) {
+        this.textStyle.setUnderline(isUnderline);
+    }
 }

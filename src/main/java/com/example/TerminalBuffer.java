@@ -32,7 +32,8 @@ public class TerminalBuffer implements ITerminalBuffer{
     @Override
     public void writeText(String text) {
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes); 
-        for (char c : text.toCharArray()) {
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
             screen.writeCell(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
             moveCursorNext();
         }
@@ -41,7 +42,8 @@ public class TerminalBuffer implements ITerminalBuffer{
     @Override
     public void insertText(String text) {
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
-        for (char c : text.toCharArray()) {
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
             insertChar(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
             moveCursorNext();
         }
@@ -90,8 +92,20 @@ public class TerminalBuffer implements ITerminalBuffer{
     }
 
     @Override
-    public void setTextStyle(TextStyle textStyle) {
-        this.cellAttributes.setTextStyle(textStyle);
+    public void setBold(boolean isBold) {
+        this.cellAttributes.setBold(isBold);
+    }
+
+
+
+    @Override
+    public void setItalic(boolean isItalic) {
+        this.cellAttributes.setItalic(isItalic);
+    }
+
+    @Override
+    public void setUnderline(boolean isUnderline) {
+        this.cellAttributes.setUnderline(isUnderline);
     }
 
     // helpers

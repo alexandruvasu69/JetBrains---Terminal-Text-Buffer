@@ -16,7 +16,9 @@ public interface ITerminalBuffer {
     // style operations
     void setForegroundColor(Color color); 
     void setBackgroundColor(Color color);
-    void setTextStyle(TextStyle style);
+    void setBold(boolean isBold);
+    void setItalic(boolean isItalic);
+    void setUnderline(boolean isUnderline);
 
     // cursor operations
     void moveCursorUp(int offset) throws RuntimeException;
