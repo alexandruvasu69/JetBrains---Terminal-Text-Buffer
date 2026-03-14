@@ -1,7 +1,13 @@
 package com.example;
 
 public class Cell implements ICell {
-    char character = ' ';
+    private char character = ' ';
+
+    public Cell() {}
+
+    private Cell(ICell cell) {
+        this.character = cell.getCharacter();
+    }
 
     @Override
     public char getCharacter() {
@@ -17,5 +23,8 @@ public class Cell implements ICell {
     public boolean isEmpty() {
         return character == ' ';
     }
-    
+
+    public static ICell cloneFrom(ICell cell) {
+        return new Cell(cell);
+    }
 }
