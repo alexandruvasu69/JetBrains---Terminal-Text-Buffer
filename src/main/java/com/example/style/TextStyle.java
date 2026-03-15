@@ -1,4 +1,4 @@
-package com.example;
+package com.example.style;
 
 public class TextStyle {
     private boolean isBold;

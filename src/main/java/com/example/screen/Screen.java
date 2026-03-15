@@ -1,4 +1,11 @@
-package com.example;
+package com.example.screen;
+
+import com.example.IAttributesAccess;
+import com.example.TerminalRenderer;
+import com.example.cell.Cell;
+import com.example.cell.CellAttributes;
+import com.example.cell.ICell;
+import com.example.cell.ICellAttributes;
 
 public class Screen implements IScreen, IAttributesAccess{
     private ICell[][] grid;

@@ -1,4 +1,4 @@
-package com.example;
+package com.example.cell;
 
 public interface ICell {
     char getCharacter();

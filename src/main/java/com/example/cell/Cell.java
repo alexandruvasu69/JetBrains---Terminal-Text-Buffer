@@ -1,4 +1,4 @@
-package com.example;
+package com.example.cell;
 
 public class Cell implements ICell {
     private final static char EMTPTY_CHAR = ' ';

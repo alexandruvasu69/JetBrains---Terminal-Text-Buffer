@@ -1,4 +1,4 @@
-package com.example;
+package com.example.cursor;
 
 public class Cursor implements ICursor {
     int rowPosition;

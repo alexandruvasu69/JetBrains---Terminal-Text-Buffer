@@ -1,4 +1,4 @@
-package com.example;
+package com.example.style;
 
 public enum Color {
     RED,

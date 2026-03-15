@@ -1,4 +1,8 @@
-package com.example;
+package com.example.scrollback;
+
+import com.example.TerminalRenderer;
+import com.example.cell.ICell;
+import com.example.cell.ICellAttributes;
 
 public class Scrollback implements IScrollback{
     private int maxSize;

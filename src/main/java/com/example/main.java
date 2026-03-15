@@ -1,5 +1,9 @@
 package com.example;
 
+import com.example.style.Color;
+import com.example.terminal_buffer.ITerminalBuffer;
+import com.example.terminal_buffer.TerminalBuffer;
+
 public class main {
     public static void main(String[] args) {
         ITerminalBuffer terminalBuffer = new TerminalBuffer(10, 3, 10);

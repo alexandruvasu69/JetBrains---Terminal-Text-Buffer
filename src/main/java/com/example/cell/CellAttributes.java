@@ -1,4 +1,7 @@
-package com.example;
+package com.example.cell;
+
+import com.example.style.Color;
+import com.example.style.TextStyle;
 
 public class CellAttributes implements ICellAttributes {
     private Color foregroundColor = Color.getDefaultForeground(); 
@@ -19,11 +22,11 @@ public class CellAttributes implements ICellAttributes {
         this.textStyle = TextStyle.cloneFrom(attributes.textStyle);
     }
 
-    static CellAttributes getDefaultAttributes() {
+    public static CellAttributes getDefaultAttributes() {
         return new CellAttributes();
     }
 
-    static CellAttributes cloneFrom(CellAttributes attributes) {
+    public static CellAttributes cloneFrom(CellAttributes attributes) {
         return new CellAttributes(attributes);
     }
 
@@ -32,7 +35,7 @@ public class CellAttributes implements ICellAttributes {
         return foregroundColor;
     }
 
-    void setForegroundColor(Color foregroundColor) {
+    public void setForegroundColor(Color foregroundColor) {
         this.foregroundColor = foregroundColor;
     }
 
@@ -41,7 +44,7 @@ public class CellAttributes implements ICellAttributes {
         return backgroundColor;
     }
 
-    void setBackgroundColor(Color backgroundColor) {
+    public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
@@ -60,15 +63,15 @@ public class CellAttributes implements ICellAttributes {
         return this.textStyle.isUnderline();
     }
 
-    void setBold(boolean isBold) {
+    public void setBold(boolean isBold) {
         this.textStyle.setBold(isBold);
     }
 
-    void setItalic(boolean isItalic) {
+    public void setItalic(boolean isItalic) {
         this.textStyle.setItalic(isItalic);
     }
 
-    void setUnderline(boolean isUnderline) {
+    public void setUnderline(boolean isUnderline) {
         this.textStyle.setUnderline(isUnderline);
     }
 }

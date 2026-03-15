@@ -1,5 +1,7 @@
 package com.example;
 
+import com.example.cell.ICell;
+
 public class TerminalRenderer {
     private final StringBuilder sb;
 

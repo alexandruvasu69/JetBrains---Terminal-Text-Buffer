@@ -1,4 +1,17 @@
-package com.example;
+package com.example.terminal_buffer;
+
+import com.example.cell.CellAttributes;
+import com.example.cell.ICell;
+import com.example.cell.ICellAttributes;
+import com.example.cursor.Cursor;
+import com.example.cursor.ICursor;
+import com.example.exceptions.OffsetValueException;
+import com.example.exceptions.OutOfBoundsException;
+import com.example.screen.IScreen;
+import com.example.screen.Screen;
+import com.example.scrollback.IScrollback;
+import com.example.scrollback.Scrollback;
+import com.example.style.Color;
 
 public class TerminalBuffer implements ITerminalBuffer{
     private IScreen screen;
@@ -278,7 +291,7 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException {
-        validateScreenRow(row);
+        validateScreenRow(row); // TODO: fix validation for scrollback
         validateScreenCol(col);
         return this.scrollback.getAttributesAt(row, col);
     }

@@ -1,4 +1,8 @@
-package com.example;
+package com.example.screen;
+
+import com.example.IAttributesAccess;
+import com.example.cell.CellAttributes;
+import com.example.cell.ICell;
 
 public interface IScreen extends IAttributesAccess{
     int getWidth();

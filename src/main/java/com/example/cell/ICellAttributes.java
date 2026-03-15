@@ -1,4 +1,6 @@
-package com.example;
+package com.example.cell;
+
+import com.example.style.Color;
 
 public interface ICellAttributes {
     Color getForegroundColor();

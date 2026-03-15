@@ -1,4 +1,7 @@
-package com.example;
+package com.example.scrollback;
+
+import com.example.IAttributesAccess;
+import com.example.cell.ICell;
 
 public interface IScrollback extends IAttributesAccess{
     void addLine(ICell[] line);
