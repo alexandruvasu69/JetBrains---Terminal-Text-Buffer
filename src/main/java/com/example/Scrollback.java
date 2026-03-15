@@ -54,7 +54,7 @@ public class Scrollback implements IScrollback{
         TerminalRenderer tr = new TerminalRenderer();
         for (int i = 0; i < size; i++) {
             int physicalIndex = (oldest + i) % maxSize;
-            tr.appendLine(grid[physicalIndex]);
+            tr.appendLine(grid[physicalIndex]).appendNewLine();
         }
         tr.removeLastChar();
 
@@ -77,7 +77,6 @@ public class Scrollback implements IScrollback{
     public String getLineString(int row) {
         TerminalRenderer tr = new TerminalRenderer();
         tr.appendLine(grid[row]);
-        tr.removeLastChar();
 
         return tr.build();
     }

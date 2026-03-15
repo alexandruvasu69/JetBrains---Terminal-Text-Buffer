@@ -44,7 +44,7 @@ public class Screen implements IScreen{
     public String getScreenString() {
         TerminalRenderer tr = new TerminalRenderer();
         for (int row = 0; row < height; row++) {
-            tr.appendLine(grid[toPhysicalRow(row)]);
+            tr.appendLine(grid[toPhysicalRow(row)]).appendNewLine();
         } 
         tr.removeLastChar();
 
@@ -102,7 +102,6 @@ public class Screen implements IScreen{
     public String getLineString(int row) {
         TerminalRenderer tr = new TerminalRenderer();
         tr.appendLine(grid[row]);
-        tr.removeLastChar();
         return tr.build();
     }
 

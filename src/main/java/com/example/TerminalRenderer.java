@@ -11,6 +11,11 @@ public class TerminalRenderer {
         for (ICell cell : line) {
             sb.append(cell.getCharacter());
         }
+
+        return this;
+    }
+
+    public TerminalRenderer appendNewLine() {
         sb.append('\n');
 
         return this;
