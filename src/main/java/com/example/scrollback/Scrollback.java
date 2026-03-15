@@ -20,6 +20,11 @@ public class Scrollback implements IScrollback{
     }
 
     @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
     public int getMaxSize() {
         return maxSize;
     }
@@ -40,30 +45,6 @@ public class Scrollback implements IScrollback{
         }
     }
 
-    private void moveNext() {
-        this.next = (next + 1) % maxSize;
-    }
-
-    private int getOldest() {
-        if (size < maxSize) {
-            return 0;
-        }
-        return next;
-    }
-
-    @Override
-    public String getContent() {
-        int oldest = getOldest();
-
-        TerminalRenderer tr = new TerminalRenderer();
-        for (int i = 0; i < size; i++) {
-            int physicalIndex = (oldest + i) % maxSize;
-            tr.appendLine(grid[physicalIndex]).appendNewLine();
-        }
-        tr.removeLastChar();
-
-        return tr.build();
-    }
 
     @Override
     public void clear() {
@@ -76,9 +57,25 @@ public class Scrollback implements IScrollback{
        this.next = 0;
        this.size = 0;
     }
+    
 
     @Override
-    public String getLineString(int row) {
+    public String getContentAsString() {
+        int oldest = getOldest();
+
+        TerminalRenderer tr = new TerminalRenderer();
+        for (int i = 0; i < size; i++) {
+            int physicalIndex = (oldest + i) % maxSize;
+            tr.appendLine(grid[physicalIndex]).appendNewLine();
+        }
+        tr.removeLastChar();
+
+        return tr.build();
+    }
+
+
+    @Override
+    public String getLineAsString(int row) {
         TerminalRenderer tr = new TerminalRenderer();
         tr.appendLine(grid[row]);
 
@@ -90,15 +87,20 @@ public class Scrollback implements IScrollback{
         return grid[row][col].getCharacter();
     }
 
-    @Override
-    public int getWidth() {
-        return this.width;
-    }
 
     @Override
     public ICellAttributes getAttributesAt(int row, int col) {
         return this.grid[row][col].getAttributes();
     }
 
+    private void moveNext() {
+        this.next = (next + 1) % maxSize;
+    }
 
+    private int getOldest() {
+        if (size < maxSize) {
+            return 0;
+        }
+        return next;
+    }
 }

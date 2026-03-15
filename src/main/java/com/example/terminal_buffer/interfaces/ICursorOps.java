@@ -1,4 +1,4 @@
-package com.example.terminal_buffer;
+package com.example.terminal_buffer.interfaces;
 
 // cursor operations
 public interface ICursorOps {

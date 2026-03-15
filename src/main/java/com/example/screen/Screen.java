@@ -1,13 +1,12 @@
 package com.example.screen;
 
-import com.example.IAttributesAccess;
 import com.example.TerminalRenderer;
 import com.example.cell.Cell;
 import com.example.cell.CellAttributes;
 import com.example.cell.ICell;
 import com.example.cell.ICellAttributes;
 
-public class Screen implements IScreen, IAttributesAccess{
+public class Screen implements IScreen {
     private ICell[][] grid;
     private int width;
     private int height;
@@ -26,17 +25,6 @@ public class Screen implements IScreen, IAttributesAccess{
         }
     }
 
-    private int toPhysicalRow(int logicalRow) {
-        return (firstRow + logicalRow) % height;
-    }
-
-    @Override
-    public void fillLine(char character, CellAttributes attributes, int row) {
-        for (int col = 0; col < width; col++) {
-            writeCell(character, attributes, row, col);
-        }
-    }
-
     @Override
     public int getWidth() {
         return this.width;
@@ -47,17 +35,7 @@ public class Screen implements IScreen, IAttributesAccess{
         return this.height;
     }
 
-    @Override
-    public String getScreenString() {
-        TerminalRenderer tr = new TerminalRenderer();
-        for (int row = 0; row < height; row++) {
-            tr.appendLine(grid[toPhysicalRow(row)]).appendNewLine();
-        } 
-        tr.removeLastChar();
-
-        return tr.build();
-    }
-
+    // EDITING
     @Override
     public void writeCell(char character, CellAttributes attributes, int row, int col) {
         this.grid[toPhysicalRow(row)][col].setCharacter(character);
@@ -80,13 +58,10 @@ public class Screen implements IScreen, IAttributesAccess{
     }
 
     @Override
-    public void clearScreen() {
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                this.grid[row][col].resetCell();
-            }
+    public void fillLine(char character, CellAttributes attributes, int row) {
+        for (int col = 0; col < width; col++) {
+            writeCell(character, attributes, row, col);
         }
-        this.firstRow = 0;
     }
 
     @Override
@@ -106,7 +81,29 @@ public class Screen implements IScreen, IAttributesAccess{
     }
 
     @Override
-    public String getLineString(int row) {
+    public void clearScreen() {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                this.grid[row][col].resetCell();
+            }
+        }
+        this.firstRow = 0;
+    }
+
+    // CONTENT ACCESS
+    @Override
+    public String getContentAsString() {
+        TerminalRenderer tr = new TerminalRenderer();
+        for (int row = 0; row < height; row++) {
+            tr.appendLine(grid[toPhysicalRow(row)]).appendNewLine();
+        } 
+        tr.removeLastChar();
+
+        return tr.build();
+    }
+
+    @Override
+    public String getLineAsString(int row) {
         TerminalRenderer tr = new TerminalRenderer();
         tr.appendLine(grid[row]);
         return tr.build();
@@ -120,5 +117,9 @@ public class Screen implements IScreen, IAttributesAccess{
     @Override
     public ICellAttributes getAttributesAt(int row, int col) {
         return grid[row][col].getAttributes();
+    }
+
+    private int toPhysicalRow(int logicalRow) {
+        return (firstRow + logicalRow) % height;
     }
 }

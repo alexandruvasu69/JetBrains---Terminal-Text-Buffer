@@ -12,18 +12,24 @@ import com.example.screen.Screen;
 import com.example.scrollback.IScrollback;
 import com.example.scrollback.Scrollback;
 import com.example.style.Color;
+import com.example.terminal_buffer.helpers.BoundsValidator;
+import com.example.terminal_buffer.helpers.CursorManager;
 
 public class TerminalBuffer implements ITerminalBuffer{
     private IScreen screen;
     private ICursor cursor;
     private IScrollback scrollback; 
     private CellAttributes cellAttributes;
+    private BoundsValidator validator;
+    private CursorManager cursorManager;
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize) {
         this.screen = new Screen(width, height);
         this.scrollback = new Scrollback(width, scrollBackMaxSize);
         this.cellAttributes = CellAttributes.getDefaultAttributes();
         this.cursor = new Cursor(0, 0);
+        this.validator = new BoundsValidator(this.screen, this.scrollback);
+        this.cursorManager = new CursorManager(this.cursor, this.screen, this.validator);
     }
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize, ICursor cursor) {
@@ -65,7 +71,7 @@ public class TerminalBuffer implements ITerminalBuffer{
     private void insertChar(char c, CellAttributes attributes, int row, int col) {
         ICell lastCell = screen.insertCell(c, attributes, row, col);
 
-        if (!(lastCell.isEmpty())  && !isPositionOutOfBounds(row + 1, col)) {
+        if (!(lastCell.isEmpty())  && !validator.isScreenPositionOutOfBounds(row + 1, col)) {
             insertChar(lastCell.getCharacter(), lastCell.getAttributes(), row + 1, 0);
         }
     }
@@ -78,22 +84,76 @@ public class TerminalBuffer implements ITerminalBuffer{
     }
 
     @Override
-    public String getScreenContent() {
-        return screen.getScreenString();
-    }
-
-    @Override
     public void clearScreen() {
         screen.clearScreen();
     }
 
-    // scrollback operations
+    @Override
+    public void insertEmptyLine() {
+        ICell[] cell = this.screen.insertEmptyLine();
+        this.scrollback.addLine(cell);
+    }
+
+    @Override
+    public String getScreenContent() {
+        return screen.getContentAsString();
+    }
+
+    @Override
+    public String getLineFromScreen(int row) throws OutOfBoundsException {
+        validator.validateScreenRow(row);
+        return this.screen.getLineAsString(row);
+    }
+
+    @Override
+    public char getCharacterFromScreenAt(int row, int col) throws OutOfBoundsException {
+        validator.validateScreenRow(row);
+        validator.validateScreenCol(col);
+        return this.screen.getCharacterAt(row, col);
+    }
+
+    @Override
+    public ICellAttributes getAttributesFromScreenAt(int row, int col) throws OutOfBoundsException {
+        validator.validateScreenRow(row);
+        validator.validateScreenCol(col);
+        return this.screen.getAttributesAt(row, col);
+    }
+
+    // SCROLLBACK OPERATIONS
     @Override
     public int getScrollBackMaxSize() {
         return scrollback.getMaxSize();
     }
 
-    // global operations
+    @Override
+    public String getScrollbackContent() {
+        return this.scrollback.getContentAsString();
+    }
+
+    @Override
+    public String getLineFromScrollback(int row) throws OutOfBoundsException {
+        validator.validateScrollbackRow(row);
+        return this.scrollback.getLineAsString(row);
+    }
+
+
+    @Override
+    public char getCharacterFromScrollbackAt(int row, int col) throws OutOfBoundsException {
+        validator.validateScrollbackRow(row);
+        validator.validateScrollbackCol(col);
+
+        return this.scrollback.getCharacterAt(row, col);
+    }
+
+
+    @Override
+    public ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException {
+        validator.validateScrollbackRow(row); // TODO: fix validation for scrollback
+        validator.validateScrollbackCol(col);
+        return this.scrollback.getAttributesAt(row, col);
+    }
+
+    // STYLE OPERATIONS
     @Override
     public void setForegroundColor(Color foregroundColor) {
         this.cellAttributes.setForegroundColor(foregroundColor);
@@ -119,181 +179,45 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.cellAttributes.setUnderline(isUnderline);
     }
 
-    // helpers
-    private boolean isPositionOutOfBounds(int row, int col) {
-        return isRowOutOfScreenBounds(row) || isColOutOfScreenBounds(col);
-    }
-
-    private boolean isColOutOfScrollbackBounds(int col) {
-        return col >= scrollback.getWidth() || col < 0;
-    }
-    
-    private boolean isColOutOfScreenBounds(int col) {
-        return col >= screen.getWidth() || col < 0;
-    }
-
-    private boolean isRowOutOfScrollbackBounds(int row) {
-        return row >= scrollback.getMaxSize() || row < 0;
-    }
-
-    private boolean isRowOutOfScreenBounds(int row) {
-        return row >= screen.getHeight() || row < 0;
-    }
-
-    private void validateOffset(int offset) throws OffsetValueException {
-        if (offset < 0) {
-            throw new OffsetValueException();
-        }
-    }
-
-    private void validateScreenCol(int col) throws OutOfBoundsException {
-        if (isColOutOfScreenBounds(col)) {
-            throw new OutOfBoundsException();
-        }
-    }
-
-    private void validateScreenRow(int row) throws OutOfBoundsException {
-        if (isRowOutOfScreenBounds(row)) {
-            throw new OutOfBoundsException();
-        }
-    }
-
-    private void validateScrollbackCol(int col) throws OutOfBoundsException {
-        if (isColOutOfScrollbackBounds(col)) {
-            throw new OutOfBoundsException();
-        }
-    }
-
-    private void validateScrollbackRow(int row) throws OutOfBoundsException {
-        if (isRowOutOfScrollbackBounds(row)) {
-            throw new OutOfBoundsException();
-        }
-    }
-
-    // cursor operations
+    // CURSOR OPERATIONS
     private void moveCursorNext() {
-        int row = cursor.getRowPosition();
-
-        try {
-            moveCursorRight(1);
-        } catch(OutOfBoundsException e1) {
-            try {
-                setCursorPosition(row + 1, 0);
-            } catch (OutOfBoundsException e2) {
-
-                setCursorPosition(screen.getHeight() - 1, screen.getWidth() - 1);
-            }
-        }
+        this.cursorManager.moveCursorNext();
     }
 
     @Override
     public void moveCursorDown(int offset) throws OutOfBoundsException, OffsetValueException {
-        validateOffset(offset);
-        int newRow = cursor.getRowPosition() + offset;
-
-        validateScreenRow(newRow);
-
-        cursor.setRowPosition(newRow);
+        this.cursorManager.moveCursorDown(offset);
     }
 
     @Override
     public void moveCursorUp(int offset) throws OutOfBoundsException, OffsetValueException {
-        validateOffset(offset);
-        int newRow = cursor.getRowPosition() - offset;
-
-        validateScreenRow(newRow);
-
-        cursor.setRowPosition(newRow);
+        this.cursorManager.moveCursorUp(offset);
     }
 
     @Override
     public void moveCursorLeft(int offset) throws OutOfBoundsException, OffsetValueException {
-        validateOffset(offset);
-        int newCol = cursor.getColumnPosition() - offset;
-
-        validateScreenCol(newCol);
-
-        cursor.setColumnPosition(newCol);
+        this.cursorManager.moveCursorLeft(offset);
     }
 
     @Override
     public void moveCursorRight(int offset) throws OutOfBoundsException {
-        validateOffset(offset);
-        int newCol = cursor.getColumnPosition() + offset;
-
-        validateScreenCol(newCol);
-
-        cursor.setColumnPosition(newCol);
+        this.cursorManager.moveCursorRight(offset);
     }
 
     @Override
     public void setCursorColumn(int col) throws OutOfBoundsException {
-        validateScreenCol(col);
-        cursor.setColumnPosition(col);
+        this.cursorManager.setCursorColumn(col);
     }
 
     @Override
     public void setCursorRow(int row) throws OutOfBoundsException {
-        validateScreenRow(row);
-        cursor.setRowPosition(row);
+        this.cursorManager.setCursorRow(row);
     }
 
     @Override
     public void setCursorPosition(int row, int col) throws RuntimeException {
-        setCursorRow(row);
-        setCursorColumn(col);
+        this.cursorManager.setCursorPosition(row, col);
     }
 
-    @Override
-    public void insertEmptyLine() {
-        ICell[] cell = this.screen.insertEmptyLine();
-        this.scrollback.addLine(cell);
-    }
-
-    @Override
-    public String getScrollbackContent() {
-        return this.scrollback.getContent();
-    }
-
-    @Override
-    public String getLineFromScreen(int row) throws OutOfBoundsException {
-        validateScreenRow(row);
-        return this.screen.getLineString(row);
-    }
-
-    @Override
-    public String getLineFromScrollback(int row) throws OutOfBoundsException {
-        validateScrollbackRow(row);
-        return this.scrollback.getLineString(row);
-    }
-
-    @Override
-    public char getCharacterFromScreenAt(int row, int col) throws OutOfBoundsException {
-        validateScreenRow(row);
-        validateScreenCol(col);
-        return this.screen.getCharacterAt(row, col);
-    }
-
-    @Override
-    public char getCharacterFromScrollbackAt(int row, int col) throws OutOfBoundsException {
-        validateScrollbackRow(row);
-        validateScrollbackCol(col);
-
-        return this.scrollback.getCharacterAt(row, col);
-    }
-
-    @Override
-    public ICellAttributes getAttributesFromScreenAt(int row, int col) throws OutOfBoundsException {
-        validateScreenRow(row);
-        validateScreenCol(col);
-        return this.screen.getAttributesAt(row, col);
-    }
-
-    @Override
-    public ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException {
-        validateScreenRow(row); // TODO: fix validation for scrollback
-        validateScreenCol(col);
-        return this.scrollback.getAttributesAt(row, col);
-    }
     
 }

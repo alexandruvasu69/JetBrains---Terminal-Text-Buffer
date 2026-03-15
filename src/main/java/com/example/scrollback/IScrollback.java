@@ -1,14 +1,12 @@
 package com.example.scrollback;
 
-import com.example.IAttributesAccess;
 import com.example.cell.ICell;
+import com.example.shared.IContentAccess;
 
-public interface IScrollback extends IAttributesAccess{
-    void addLine(ICell[] line);
-    int getMaxSize();
+public interface IScrollback extends IContentAccess {
     int getWidth();
-    String getContent();
-    String getLineString(int row);
+    int getMaxSize();
+
+    void addLine(ICell[] line);
     void clear();
-    char getCharacterAt(int row, int col);
 }
