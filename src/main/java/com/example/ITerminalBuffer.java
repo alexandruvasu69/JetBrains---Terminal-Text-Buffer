@@ -7,12 +7,10 @@ public interface ITerminalBuffer {
     void writeText(String text);
     void insertText(String text);
     void fillLine(char character);
-    String getScreenContent();
     void clearScreen();
     
     // scrollback operations
     int getScrollBackMaxSize();
-    String getScrollbackContent();
     void insertEmptyLine();
 
     // style operations
@@ -31,4 +29,9 @@ public interface ITerminalBuffer {
     void setCursorColumn(int col) throws RuntimeException;
     void setCursorPosition(int row, int col) throws RuntimeException;
 
+    // content access
+    String getScreenContent();
+    String getScrollbackContent(); // TO-DO: make this screen + scrollback content
+    String getLineFromScreen(int row) throws RuntimeException;
+    String getLineFromScrollback(int row) throws RuntimeException;
 }

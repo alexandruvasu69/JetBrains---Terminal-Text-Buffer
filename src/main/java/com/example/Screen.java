@@ -98,5 +98,13 @@ public class Screen implements IScreen{
         return removedLine;
     }
 
+    @Override
+    public String getLineString(int row) {
+        TerminalRenderer tr = new TerminalRenderer();
+        tr.appendLine(grid[row]);
+        tr.removeLastChar();
+        return tr.build();
+    }
+
 
 }

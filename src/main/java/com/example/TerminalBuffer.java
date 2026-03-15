@@ -96,8 +96,6 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.cellAttributes.setBold(isBold);
     }
 
-
-
     @Override
     public void setItalic(boolean isItalic) {
         this.cellAttributes.setItalic(isItalic);
@@ -121,19 +119,19 @@ public class TerminalBuffer implements ITerminalBuffer{
         return row >= screen.getHeight() || row < 0;
     }
 
-    private void validateOffset(int offset) {
+    private void validateOffset(int offset) throws OffsetValueException {
         if (offset < 0) {
             throw new OffsetValueException();
         }
     }
 
-    private void validateCol(int col) {
+    private void validateCol(int col) throws OutOfBoundsException {
         if (isColOutOfBounds(col)) {
             throw new OutOfBoundsException();
         }
     }
 
-    private void validateRow(int row) {
+    private void validateRow(int row) throws OutOfBoundsException {
         if (isRowOutOfBounds(row)) {
             throw new OutOfBoundsException();
         }
@@ -223,4 +221,18 @@ public class TerminalBuffer implements ITerminalBuffer{
     public String getScrollbackContent() {
         return this.scrollback.getContent();
     }
+
+    @Override
+    public String getLineFromScreen(int row) throws OutOfBoundsException {
+        validateRow(row);
+        return this.screen.getLineString(row);
+    }
+
+    @Override
+    public String getLineFromScrollback(int row) throws OutOfBoundsException {
+        validateRow(row);
+        return this.scrollback.getLineString(row);
+    }
+
+
 }

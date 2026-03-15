@@ -10,4 +10,5 @@ public interface IScreen {
     ICell[] insertEmptyLine();
     String getScreenString();
     void clearScreen();
+    String getLineString(int row);
 }
