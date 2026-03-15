@@ -108,14 +108,22 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // helpers
     private boolean isPositionOutOfBounds(int row, int col) {
-        return isRowOutOfBounds(row) || isColOutOfBounds(col);
+        return isRowOutOfScreenBounds(row) || isColOutOfScreenBounds(col);
+    }
+
+    private boolean isColOutOfScrollbackBounds(int col) {
+        return col >= scrollback.getWidth() || col < 0;
     }
     
-    private boolean isColOutOfBounds(int col) {
+    private boolean isColOutOfScreenBounds(int col) {
         return col >= screen.getWidth() || col < 0;
     }
 
-    private boolean isRowOutOfBounds(int row) {
+    private boolean isRowOutOfScrollbackBounds(int row) {
+        return row >= scrollback.getMaxSize() || row < 0;
+    }
+
+    private boolean isRowOutOfScreenBounds(int row) {
         return row >= screen.getHeight() || row < 0;
     }
 
@@ -125,14 +133,26 @@ public class TerminalBuffer implements ITerminalBuffer{
         }
     }
 
-    private void validateCol(int col) throws OutOfBoundsException {
-        if (isColOutOfBounds(col)) {
+    private void validateScreenCol(int col) throws OutOfBoundsException {
+        if (isColOutOfScreenBounds(col)) {
             throw new OutOfBoundsException();
         }
     }
 
-    private void validateRow(int row) throws OutOfBoundsException {
-        if (isRowOutOfBounds(row)) {
+    private void validateScreenRow(int row) throws OutOfBoundsException {
+        if (isRowOutOfScreenBounds(row)) {
+            throw new OutOfBoundsException();
+        }
+    }
+
+    private void validateScrollbackCol(int col) throws OutOfBoundsException {
+        if (isColOutOfScrollbackBounds(col)) {
+            throw new OutOfBoundsException();
+        }
+    }
+
+    private void validateScrollbackRow(int row) throws OutOfBoundsException {
+        if (isRowOutOfScrollbackBounds(row)) {
             throw new OutOfBoundsException();
         }
     }
@@ -158,7 +178,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         validateOffset(offset);
         int newRow = cursor.getRowPosition() + offset;
 
-        validateRow(newRow);
+        validateScreenRow(newRow);
 
         cursor.setRowPosition(newRow);
     }
@@ -168,7 +188,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         validateOffset(offset);
         int newRow = cursor.getRowPosition() - offset;
 
-        validateRow(newRow);
+        validateScreenRow(newRow);
 
         cursor.setRowPosition(newRow);
     }
@@ -178,7 +198,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         validateOffset(offset);
         int newCol = cursor.getColumnPosition() - offset;
 
-        validateCol(newCol);
+        validateScreenCol(newCol);
 
         cursor.setColumnPosition(newCol);
     }
@@ -188,20 +208,20 @@ public class TerminalBuffer implements ITerminalBuffer{
         validateOffset(offset);
         int newCol = cursor.getColumnPosition() + offset;
 
-        validateCol(newCol);
+        validateScreenCol(newCol);
 
         cursor.setColumnPosition(newCol);
     }
 
     @Override
     public void setCursorColumn(int col) throws OutOfBoundsException {
-        validateCol(col);
+        validateScreenCol(col);
         cursor.setColumnPosition(col);
     }
 
     @Override
     public void setCursorRow(int row) throws OutOfBoundsException {
-        validateRow(row);
+        validateScreenRow(row);
         cursor.setRowPosition(row);
     }
 
@@ -224,27 +244,27 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public String getLineFromScreen(int row) throws OutOfBoundsException {
-        validateRow(row);
+        validateScreenRow(row);
         return this.screen.getLineString(row);
     }
 
     @Override
     public String getLineFromScrollback(int row) throws OutOfBoundsException {
-        validateRow(row);
+        validateScrollbackRow(row);
         return this.scrollback.getLineString(row);
     }
 
     @Override
     public char getCharacterFromScreenAt(int row, int col) throws OutOfBoundsException {
-        validateRow(row);
-        validateCol(col);
+        validateScreenRow(row);
+        validateScreenCol(col);
         return this.screen.getCharacterAt(row, col);
     }
 
     @Override
     public char getCharacterFromScrollbackAt(int row, int col) throws OutOfBoundsException {
-        validateRow(row);
-        validateCol(col);
+        validateScrollbackRow(row);
+        validateScrollbackCol(col);
 
         return this.scrollback.getCharacterAt(row, col);
     }
