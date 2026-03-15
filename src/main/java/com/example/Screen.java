@@ -105,5 +105,10 @@ public class Screen implements IScreen{
         return tr.build();
     }
 
+    @Override
+    public char getCharacterAt(int row, int col) {
+        return grid[row][col].getCharacter();
+    }
+
 
 }

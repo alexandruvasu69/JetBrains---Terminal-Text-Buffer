@@ -6,4 +6,5 @@ public interface IScrollback {
     String getContent();
     String getLineString(int row);
     void clear();
+    char getCharacterAt(int row, int col);
 }

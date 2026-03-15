@@ -234,5 +234,21 @@ public class TerminalBuffer implements ITerminalBuffer{
         return this.scrollback.getLineString(row);
     }
 
+    @Override
+    public char getCharacterFromScreenAt(int row, int col) throws OutOfBoundsException {
+        validateRow(row);
+        validateCol(col);
+        return this.screen.getCharacterAt(row, col);
+    }
 
+    @Override
+    public char getCharacterFromScrollbackAt(int row, int col) throws OutOfBoundsException {
+        validateRow(row);
+        validateCol(col);
+
+        return this.scrollback.getCharacterAt(row, col);
+    }
+
+
+    
 }

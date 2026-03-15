@@ -81,6 +81,8 @@ public class Scrollback implements IScrollback{
         return tr.build();
     }
 
-
-
+    @Override
+    public char getCharacterAt(int row, int col) {
+        return grid[row][col].getCharacter();
+    }
 }

@@ -11,4 +11,5 @@ public interface IScreen {
     String getScreenString();
     void clearScreen();
     String getLineString(int row);
+    char getCharacterAt(int row, int col);
 }

@@ -34,4 +34,7 @@ public interface ITerminalBuffer {
     String getScrollbackContent(); // TO-DO: make this screen + scrollback content
     String getLineFromScreen(int row) throws RuntimeException;
     String getLineFromScrollback(int row) throws RuntimeException;
+    char getCharacterFromScreenAt(int row, int col) throws RuntimeException;
+    char getCharacterFromScrollbackAt(int row, int col) throws RuntimeException;
+    
 }
