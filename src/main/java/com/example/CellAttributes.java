@@ -1,6 +1,6 @@
 package com.example;
 
-public class CellAttributes {
+public class CellAttributes implements ICellAttributes {
     private Color foregroundColor = Color.getDefaultForeground(); 
     private Color backgroundColor = Color.getDefaultBackground(); 
     private TextStyle textStyle = new TextStyle();
@@ -27,34 +27,48 @@ public class CellAttributes {
         return new CellAttributes(attributes);
     }
 
+    @Override
     public Color getForegroundColor() {
         return foregroundColor;
     }
 
-    public void setForegroundColor(Color foregroundColor) {
+    void setForegroundColor(Color foregroundColor) {
         this.foregroundColor = foregroundColor;
     }
 
+    @Override
     public Color getBackgroundColor() {
         return backgroundColor;
     }
 
-    public void setBackgroundColor(Color backgroundColor) {
+    void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
 
-    public TextStyle getTextStyle() {
-        return textStyle;
+    @Override
+    public boolean isBold() {
+        return this.textStyle.isBold();
     }
 
-    public void setBold(boolean isBold) {
+    @Override
+    public boolean isItalic() {
+        return this.textStyle.isItalic();
+    }
+
+    @Override
+    public boolean isUnderline() {
+        return this.textStyle.isUnderline();
+    }
+
+    void setBold(boolean isBold) {
         this.textStyle.setBold(isBold);
     }
 
-    public void setItalic(boolean isItalic) {
+    void setItalic(boolean isItalic) {
         this.textStyle.setItalic(isItalic);
     }
-    public void setUnderline(boolean isUnderline) {
+
+    void setUnderline(boolean isUnderline) {
         this.textStyle.setUnderline(isUnderline);
     }
 }

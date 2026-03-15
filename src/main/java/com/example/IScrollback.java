@@ -1,6 +1,6 @@
 package com.example;
 
-public interface IScrollback {
+public interface IScrollback extends IAttributesAccess{
     void addLine(ICell[] line);
     int getMaxSize();
     int getWidth();

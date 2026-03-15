@@ -91,5 +91,10 @@ public class Scrollback implements IScrollback{
         return this.width;
     }
 
+    @Override
+    public ICellAttributes getAttributesAt(int row, int col) {
+        return this.grid[row][col].getAttributes();
+    }
+
 
 }

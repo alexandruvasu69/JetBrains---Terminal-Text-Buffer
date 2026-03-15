@@ -269,6 +269,18 @@ public class TerminalBuffer implements ITerminalBuffer{
         return this.scrollback.getCharacterAt(row, col);
     }
 
+    @Override
+    public ICellAttributes getAttributesFromScreenAt(int row, int col) throws OutOfBoundsException {
+        validateScreenRow(row);
+        validateScreenCol(col);
+        return this.screen.getAttributesAt(row, col);
+    }
 
+    @Override
+    public ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException {
+        validateScreenRow(row);
+        validateScreenCol(col);
+        return this.scrollback.getAttributesAt(row, col);
+    }
     
 }

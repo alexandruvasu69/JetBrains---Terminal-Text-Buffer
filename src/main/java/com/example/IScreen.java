@@ -1,6 +1,6 @@
 package com.example;
 
-public interface IScreen {
+public interface IScreen extends IAttributesAccess{
     int getWidth();
     int getHeight();
 

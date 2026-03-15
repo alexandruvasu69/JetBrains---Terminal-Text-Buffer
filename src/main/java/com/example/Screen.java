@@ -1,6 +1,6 @@
 package com.example;
 
-public class Screen implements IScreen{
+public class Screen implements IScreen, IAttributesAccess{
     private ICell[][] grid;
     private int width;
     private int height;
@@ -110,5 +110,8 @@ public class Screen implements IScreen{
         return grid[row][col].getCharacter();
     }
 
-
+    @Override
+    public ICellAttributes getAttributesAt(int row, int col) {
+        return grid[row][col].getAttributes();
+    }
 }

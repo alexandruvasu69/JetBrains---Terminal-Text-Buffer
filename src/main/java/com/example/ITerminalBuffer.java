@@ -36,5 +36,6 @@ public interface ITerminalBuffer {
     String getLineFromScrollback(int row) throws RuntimeException;
     char getCharacterFromScreenAt(int row, int col) throws RuntimeException;
     char getCharacterFromScrollbackAt(int row, int col) throws RuntimeException;
-    
+    ICellAttributes getAttributesFromScreenAt(int row, int col) throws RuntimeException;
+    ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException;
 }
