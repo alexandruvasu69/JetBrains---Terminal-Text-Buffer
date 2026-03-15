@@ -10,7 +10,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.screen = new Screen(width, height);
         this.scrollback = new Scrollback(scrollBackMaxSize, width);
         this.cellAttributes = CellAttributes.getDefaultAttributes();
-        this.cursor = new Cursor(height - 2, width - 7);
+        this.cursor = new Cursor(0, 0);
     }
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize, ICursor cursor) {
@@ -212,4 +212,17 @@ public class TerminalBuffer implements ITerminalBuffer{
         setCursorRow(row);
         setCursorColumn(col);
     }
+
+    @Override
+    public void insertEmptyLine() {
+        ICell[] cell = this.screen.insertEmptyLine();
+        this.scrollback.addLine(cell);
+    }
+
+    @Override
+    public String getScrollbackContent() {
+        return this.scrollback.getContent();
+    }
+
+
 }

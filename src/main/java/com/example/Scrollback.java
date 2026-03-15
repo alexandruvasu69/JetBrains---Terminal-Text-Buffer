@@ -51,16 +51,28 @@ public class Scrollback implements IScrollback{
     public String getContent() {
         int oldest = getOldest();
 
-        StringBuilder sb = new StringBuilder();
+        TerminalRenderer tr = new TerminalRenderer();
         for (int i = 0; i < size; i++) {
-            int physicalIndex = (oldest + i) % oldest;
-            for (int col = 0; col < width; col++) {
-                ICell cell = grid[physicalIndex][col];
-                sb.append(cell.getCharacter());
-            }
+            int physicalIndex = (oldest + i) % maxSize;
+            tr.appendLine(grid[physicalIndex]);
         }
+        tr.removeLastChar();
 
-        return sb.toString();
+        return tr.build();
     }
+
+    @Override
+    public void clear() {
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < width; col++) {
+                grid[row][col].resetCell();
+            }
+       } 
+
+       this.next = 0;
+       this.size = 0;
+    }
+
+
 
 }

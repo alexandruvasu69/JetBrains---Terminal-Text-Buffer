@@ -7,6 +7,7 @@ public interface IScreen {
     void writeCell(char character, CellAttributes attributes, int row, int col);
     ICell insertCell(char character, CellAttributes attributes, int row, int col);
     void fillLine(char character, CellAttributes attributes, int row);
+    ICell[] insertEmptyLine();
     String getScreenString();
     void clearScreen();
 }

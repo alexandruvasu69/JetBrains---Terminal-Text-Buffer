@@ -12,6 +12,8 @@ public interface ITerminalBuffer {
     
     // scrollback operations
     int getScrollBackMaxSize();
+    String getScrollbackContent();
+    void insertEmptyLine();
 
     // style operations
     void setForegroundColor(Color color); 
@@ -28,4 +30,5 @@ public interface ITerminalBuffer {
     void setCursorRow(int row) throws RuntimeException;
     void setCursorColumn(int col) throws RuntimeException;
     void setCursorPosition(int row, int col) throws RuntimeException;
+
 }
