@@ -1,4 +1,4 @@
-package com.example;
+package com.example.shared;
 
 import com.example.cell.ICell;
 
@@ -24,7 +24,9 @@ public class TerminalRenderer {
     }
 
     public TerminalRenderer removeLastChar() {
-        sb.setLength(sb.length() - 1);
+        if (sb.length() >= 1) {
+            sb.setLength(sb.length() - 1);
+        }
 
         return this;
     }

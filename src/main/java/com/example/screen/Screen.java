@@ -1,10 +1,10 @@
 package com.example.screen;
 
-import com.example.TerminalRenderer;
 import com.example.cell.Cell;
 import com.example.cell.CellAttributes;
 import com.example.cell.ICell;
 import com.example.cell.ICellAttributes;
+import com.example.shared.TerminalRenderer;
 
 public class Screen implements IScreen {
     private ICell[][] grid;
@@ -74,7 +74,7 @@ public class Screen implements IScreen {
         int bottomPhysicalRow = toPhysicalRow(height - 1);
         grid[bottomPhysicalRow] = new ICell[width];
         for (int col = 0; col < width; col++) {
-            grid[bottomPhysicalRow][col] = new Cell('-', CellAttributes.getDefaultAttributes());
+            grid[bottomPhysicalRow][col] = new Cell();
         }
 
         return removedLine;
@@ -105,18 +105,18 @@ public class Screen implements IScreen {
     @Override
     public String getLineAsString(int row) {
         TerminalRenderer tr = new TerminalRenderer();
-        tr.appendLine(grid[row]);
+        tr.appendLine(grid[toPhysicalRow(row)]);
         return tr.build();
     }
 
     @Override
     public char getCharacterAt(int row, int col) {
-        return grid[row][col].getCharacter();
+        return grid[toPhysicalRow(row)][col].getCharacter();
     }
 
     @Override
     public ICellAttributes getAttributesAt(int row, int col) {
-        return grid[row][col].getAttributes();
+        return grid[toPhysicalRow(row)][col].getAttributes();
     }
 
     private int toPhysicalRow(int logicalRow) {

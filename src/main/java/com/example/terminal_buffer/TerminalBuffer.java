@@ -71,8 +71,17 @@ public class TerminalBuffer implements ITerminalBuffer{
     private void insertChar(char c, CellAttributes attributes, int row, int col) {
         ICell lastCell = screen.insertCell(c, attributes, row, col);
 
-        if (!(lastCell.isEmpty())  && !validator.isScreenPositionOutOfBounds(row + 1, col)) {
-            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), row + 1, 0);
+        if (lastCell.isEmpty()) {
+            return;
+        }
+
+        int nextRow = row + 1;
+
+        if (!validator.isScreenPositionOutOfBounds(nextRow, 0)) {
+            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), nextRow, 0);
+        } else {
+            insertEmptyLine();
+            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), screen.getHeight() - 1, 0);
         }
     }
 
@@ -219,5 +228,20 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.cursorManager.setCursorPosition(row, col);
     }
 
+    @Override
+    public void clearScreenAndScrollback() {
+        clearScreen();
+        this.scrollback.clear();
+    }
+
+    @Override
+    public String getScreenAndScrollbackContent() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getScreenContent()).append('\n').append(this.getScrollbackContent());
+
+        return sb.toString();
+    }
+
+    
     
 }
