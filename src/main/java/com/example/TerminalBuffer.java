@@ -8,7 +8,7 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize) {
         this.screen = new Screen(width, height);
-        this.scrollback = new Scrollback(scrollBackMaxSize, width);
+        this.scrollback = new Scrollback(width, scrollBackMaxSize);
         this.cellAttributes = CellAttributes.getDefaultAttributes();
         this.cursor = new Cursor(0, 0);
     }
@@ -223,6 +223,4 @@ public class TerminalBuffer implements ITerminalBuffer{
     public String getScrollbackContent() {
         return this.scrollback.getContent();
     }
-
-
 }
