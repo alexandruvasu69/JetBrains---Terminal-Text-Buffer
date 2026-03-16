@@ -1,6 +1,9 @@
 package com.example.terminal_buffer;
 
 import org.junit.jupiter.api.Test;
+
+import com.example.exceptions.OutOfBoundsException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScrollbackTest {
@@ -147,5 +150,29 @@ class ScrollbackTest {
 
         assertEquals("", tb.getScreenContent().trim());
         assertEquals("", tb.getScrollbackContent().trim());
+    }
+
+    @Test
+    void getLineFromScrollbackThrowsWhenRowIsOutOfBounds() {
+        ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
+
+        tb.writeText("1111");
+        tb.writeText("2222");
+        tb.writeText("3333");
+
+        assertThrows(OutOfBoundsException.class, () -> tb.getLineFromScrollback(-1));
+    }
+
+    @Test
+    void getLineFromScrollbackReturnsEmptyLineStringIfAccessedLineIsEmpty() {
+        ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
+        assertEquals("    ", tb.getLineFromScrollback(5));
+    }
+
+
+    @Test
+    void getAttributesFromScrollbackPositionReturnsNull() {
+        ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
+        assertNull(tb.getAttributesFromScrollbackAt(5, 2));
     }
 }
