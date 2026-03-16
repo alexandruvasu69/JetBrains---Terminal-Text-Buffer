@@ -74,14 +74,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         return screen.getHeight();
     }
 
-    /**
-     * Writes text starting at the current cursor position, overwriting existing cells.
-     * The cursor advances after each character. If the cursor reaches the end of the
-     * screen, a scroll is triggered and writing continues on the new bottom row.
-     *
-     * @param text the text to write
-     * @throws IllegalArgumentException if input text is empty or null
-     */
+    /** {@inheritDoc} */
     @Override
     public void writeText(String text) {
         if (text == null) {
@@ -99,14 +92,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         }
     }
 
-    /**
-     * Inserts text at the current cursor position, shifting existing cells to the right.
-     * Characters pushed off the right edge of the row are collected as overflow,
-     * reversed into correct left-to-right order, and recursively flushed to subsequent rows.
-     *
-     * @param text the text to insert
-     * @throws IllegalArgumentException if input text is empty or null
-     */
+    /** {@inheritDoc} */
     @Override
     public void insertText(String text) {
         if (text == null) {
@@ -147,19 +133,6 @@ public class TerminalBuffer implements ITerminalBuffer{
         }
     }
 
-    /**
-     * Recursively inserts overflow cells into the given row, starting at the specified column.
-     *
-     * Each overflow cell is inserted left-to-right using {@code insertCell}, which shifts
-     * existing content to the right and returns the cell pushed off the right edge.
-     * Because forward insertion accumulates pushed-off cells in reverse order, they are
-     * reversed before being combined with any unprocessed overflow cells and flushed
-     * to the next row. If the current row is the last one, a scroll is triggered first.
-     *
-     * @param overflow the cells to insert
-     * @param row      the target row
-     * @param col      the starting column
-     */
     private void flushOverflow(List<ICell> overflow, int row, int col) {
         if (overflow.isEmpty()) return;
 
@@ -197,13 +170,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         }
     }
 
-    /**
-     * Fills the entire row at the current cursor position with the given character,
-     * using the current cell attributes.
-     *
-     * @param character the character to fill the row with
-     * @throws IllegalArgumentException if input contains special whitespace characters('\n','\t','\r')
-     */
+    /** {@inheritDoc} */
     @Override
     public void fillLine(char character) {
         if (character == '\n' || character == '\t' || character == '\r') {
@@ -214,17 +181,13 @@ public class TerminalBuffer implements ITerminalBuffer{
         screen.fillLine(character, attributes, currentRow);
     }
 
-    /** Resets all cells in the screen to their default (empty) state. */
+    /** {@inheritDoc} */
     @Override
     public void clearScreen() {
         screen.clearScreen();
     }
 
-    /**
-     * Scrolls the screen up by one line: the oldest (top) row is removed from
-     * the screen and, if it contains any non-empty cells, appended to the
-     * scrollback history. A new empty row is added at the bottom.
-     */
+    /** {@inheritDoc} */
     @Override
     public void insertEmptyLine() {
         ICell[] cells = this.screen.insertEmptyLine();
@@ -240,31 +203,20 @@ public class TerminalBuffer implements ITerminalBuffer{
         }
     }
 
-    /** Returns the full screen content as a string, with rows separated by newlines. */
+    /** {@inheritDoc} */
     @Override
     public String getScreenContent() {
         return screen.getContentAsString();
     }
 
-    /**
-     * Returns a single screen row as a string.
-     *
-     * @param row zero-based row index
-     * @throws OutOfBoundsException if the row index is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public String getLineFromScreen(int row) throws OutOfBoundsException {
         validator.validateScreenRow(row);
         return this.screen.getLineAsString(row);
     }
 
-    /**
-     * Returns the character at the given screen position.
-     *
-     * @param row zero-based row index
-     * @param col zero-based column index
-     * @throws OutOfBoundsException if the position is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public char getCharacterFromScreenAt(int row, int col) throws OutOfBoundsException {
         validator.validateScreenRow(row);
@@ -272,13 +224,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         return this.screen.getCharacterAt(row, col);
     }
 
-    /**
-     * Returns the cell attributes at the given screen position.
-     *
-     * @param row zero-based row index
-     * @param col zero-based column index
-     * @throws OutOfBoundsException if the position is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public ICellAttributes getAttributesFromScreenAt(int row, int col) throws OutOfBoundsException {
         validator.validateScreenRow(row);
@@ -288,37 +234,26 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // SCROLLBACK OPERATIONS
 
-    /** Returns the maximum number of lines the scrollback buffer can hold. */
+    /** {@inheritDoc} */
     @Override
     public int getScrollBackMaxSize() {
         return scrollback.getMaxSize();
     }
 
-    /** Returns the full scrollback content as a string, with rows separated by newlines. */
+    /** {@inheritDoc} */
     @Override
     public String getScrollbackContent() {
         return this.scrollback.getContentAsString();
     }
 
-    /**
-     * Returns a single scrollback row as a string.
-     *
-     * @param row zero-based row index into the scrollback buffer
-     * @throws OutOfBoundsException if the row index is outside the scrollback
-     */
+    /** {@inheritDoc} */
     @Override
     public String getLineFromScrollback(int row) throws OutOfBoundsException {
         validator.validateScrollbackRow(row);
         return this.scrollback.getLineAsString(row);
     }
 
-    /**
-     * Returns the character at the given scrollback position.
-     *
-     * @param row zero-based row index into the scrollback buffer
-     * @param col zero-based column index
-     * @throws OutOfBoundsException if the position is outside the scrollback
-     */
+    /** {@inheritDoc} */
     @Override
     public char getCharacterFromScrollbackAt(int row, int col) throws OutOfBoundsException {
         validator.validateScrollbackRow(row);
@@ -327,13 +262,7 @@ public class TerminalBuffer implements ITerminalBuffer{
         return this.scrollback.getCharacterAt(row, col);
     }
 
-    /**
-     * Returns the cell attributes at the given scrollback position.
-     *
-     * @param row zero-based row index into the scrollback buffer
-     * @param col zero-based column index
-     * @throws RuntimeException if the position is outside the scrollback
-     */
+    /** {@inheritDoc} */
     @Override
     public ICellAttributes getAttributesFromScrollbackAt(int row, int col) throws RuntimeException {
         validator.validateScrollbackRow(row); // TODO: fix validation for scrollback
@@ -343,51 +272,31 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // STYLE OPERATIONS
 
-    /**
-     * Sets the foreground color used for subsequently written cells.
-     *
-     * @param foregroundColor the color to apply
-     */
+    /** {@inheritDoc} */
     @Override
     public void setForegroundColor(Color foregroundColor) {
         this.cellAttributes.setForegroundColor(foregroundColor);
     }
 
-    /**
-     * Sets the background color used for subsequently written cells.
-     *
-     * @param backgroundColor the color to apply
-     */
+    /** {@inheritDoc} */
     @Override
     public void setBackgroundColor(Color backgroundColor) {
         this.cellAttributes.setBackgroundColor(backgroundColor);
     }
 
-    /**
-     * Enables or disables bold for subsequently written cells.
-     *
-     * @param isBold true to enable bold
-     */
+    /** {@inheritDoc} */
     @Override
     public void setBold(boolean isBold) {
         this.cellAttributes.setBold(isBold);
     }
 
-    /**
-     * Enables or disables italic for subsequently written cells.
-     *
-     * @param isItalic true to enable italic
-     */
+    /** {@inheritDoc} */
     @Override
     public void setItalic(boolean isItalic) {
         this.cellAttributes.setItalic(isItalic);
     }
 
-    /**
-     * Enables or disables underline for subsequently written cells.
-     *
-     * @param isUnderline true to enable underline
-     */
+    /** {@inheritDoc} */
     @Override
     public void setUnderline(boolean isUnderline) {
         this.cellAttributes.setUnderline(isUnderline);
@@ -395,12 +304,6 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // CURSOR OPERATIONS
 
-    /**
-     * Advances the cursor to the next cell position.
-     * If the cursor is at the last column, it wraps to the beginning of the next row.
-     * If the cursor is at the last column of the last row, a scroll is triggered
-     * and the cursor moves to the beginning of the new bottom row.
-     */
     private void moveCursorNext() {
         int row = cursor.getRowPosition();
         int col = cursor.getColumnPosition();
@@ -421,110 +324,68 @@ public class TerminalBuffer implements ITerminalBuffer{
         cursor.setColumnPosition(0);
     }
 
-    /** Returns the current cursor row (zero-based). */
+    /** {@inheritDoc} */
     @Override
     public int getCursorRow() {
         return this.cursorManager.getCursorRow();
     }
 
-    /** Returns the current cursor column (zero-based). */
+    /** {@inheritDoc} */
     @Override
     public int getCursorColumn() {
         return this.cursorManager.getCursorColumn();
     }
 
-    /**
-     * Moves the cursor down by the given number of rows.
-     *
-     * @param offset number of rows to move
-     * @throws OutOfBoundsException if the resulting position is outside the screen
-     * @throws OffsetValueException if the offset is invalid
-     */
+    /** {@inheritDoc} */
     @Override
     public void moveCursorDown(int offset) throws OutOfBoundsException, OffsetValueException {
         this.cursorManager.moveCursorDown(offset);
     }
 
-    /**
-     * Moves the cursor up by the given number of rows.
-     *
-     * @param offset number of rows to move
-     * @throws OutOfBoundsException if the resulting position is outside the screen
-     * @throws OffsetValueException if the offset is invalid
-     */
+    /** {@inheritDoc} */
     @Override
     public void moveCursorUp(int offset) throws OutOfBoundsException, OffsetValueException {
         this.cursorManager.moveCursorUp(offset);
     }
 
-    /**
-     * Moves the cursor left by the given number of columns.
-     *
-     * @param offset number of columns to move
-     * @throws OutOfBoundsException if the resulting position is outside the screen
-     * @throws OffsetValueException if the offset is invalid
-     */
+    /** {@inheritDoc} */
     @Override
     public void moveCursorLeft(int offset) throws OutOfBoundsException, OffsetValueException {
         this.cursorManager.moveCursorLeft(offset);
     }
 
-    /**
-     * Moves the cursor right by the given number of columns.
-     *
-     * @param offset number of columns to move
-     * @throws OutOfBoundsException if the resulting position is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public void moveCursorRight(int offset) throws OutOfBoundsException {
         this.cursorManager.moveCursorRight(offset);
     }
 
-    /**
-     * Sets the cursor column directly.
-     *
-     * @param col zero-based column index
-     * @throws OutOfBoundsException if the column is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public void setCursorColumn(int col) throws OutOfBoundsException {
         this.cursorManager.setCursorColumn(col);
     }
 
-    /**
-     * Sets the cursor row directly.
-     *
-     * @param row zero-based row index
-     * @throws OutOfBoundsException if the row is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public void setCursorRow(int row) throws OutOfBoundsException {
         this.cursorManager.setCursorRow(row);
     }
 
-    /**
-     * Sets the cursor position directly.
-     *
-     * @param row zero-based row index
-     * @param col zero-based column index
-     * @throws RuntimeException if the position is outside the screen
-     */
+    /** {@inheritDoc} */
     @Override
     public void setCursorPosition(int row, int col) throws RuntimeException {
         this.cursorManager.setCursorPosition(row, col);
     }
 
-    /** Clears both the screen and the scrollback history. */
+    /** {@inheritDoc} */
     @Override
     public void clearScreenAndScrollback() {
         clearScreen();
         this.scrollback.clear();
     }
 
-    /**
-     * Returns the combined screen and scrollback content as a single string,
-     * with the screen content first, followed by a newline, then the scrollback content.
-     */
+    /** {@inheritDoc} */
     @Override
     public String getScreenAndScrollbackContent() {
         StringBuilder sb = new StringBuilder();
@@ -532,7 +393,4 @@ public class TerminalBuffer implements ITerminalBuffer{
 
         return sb.toString();
     }
-
-
-
 }
