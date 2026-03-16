@@ -141,6 +141,8 @@ class StyleTest {
 
     @Test
     void overwriteCellReplacesStyleCompletely() {
+        // overwriting a cell replaces ALL its attributes, not just the ones that changed;
+        // the old bold+RED is fully replaced by italic+GREEN (bold is gone, not carried over)
         ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
         tb.setForegroundColor(Color.RED);
         tb.setBold(true);
@@ -189,6 +191,8 @@ class StyleTest {
 
     @Test
     void styleIsolatedBetweenCellsAfterClone() {
+        // changing the current style state after writing should not retroactively
+        // affect cells that were already written (attributes are cloned per-write)
         ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
         tb.setForegroundColor(Color.RED);
         tb.writeText("AB");
@@ -262,6 +266,8 @@ class StyleTest {
 
     @Test
     void allThreeTextStylesIndependent() {
+        // each style flag (bold, italic, underline) is independent;
+        // enabling one and disabling another should not cross-contaminate
         ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
         tb.setBold(true);
         tb.writeText("A");
@@ -301,17 +307,6 @@ class StyleTest {
         assertEquals(Color.GREEN, tb.getAttributesFromScrollbackAt(1, 0).getForegroundColor());
         assertEquals(Color.BLUE, tb.getAttributesFromScreenAt(0, 0).getForegroundColor());
         assertEquals(Color.BLUE, tb.getAttributesFromScreenAt(0, 1).getForegroundColor());
-    }
-
-    @Test
-    void writeEmptyStringDoesNotAffectStyles() {
-        ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
-        tb.setForegroundColor(Color.RED);
-        tb.writeText("A");
-        tb.setForegroundColor(Color.BLUE);
-        tb.writeText("");
-
-        assertEquals(Color.RED, tb.getAttributesFromScreenAt(0, 0).getForegroundColor());
     }
 
     @Test

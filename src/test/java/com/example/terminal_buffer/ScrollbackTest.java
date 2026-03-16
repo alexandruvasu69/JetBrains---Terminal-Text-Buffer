@@ -54,6 +54,7 @@ class ScrollbackTest {
 
     @Test
     void scrollbackKeepsOnlyLastMaxLines() {
+        // scrollback maxSize=2, so the oldest line "1111" is evicted
         ITerminalBuffer tb = new TerminalBuffer(4, 1, 2);
 
         tb.writeText("1111");
@@ -106,6 +107,8 @@ class ScrollbackTest {
 
     @Test
     void scrollbackWorksWithThreeVisibleRows() {
+        // with height=3, each writeText of 4 chars fills a row and wraps to the next;
+        // after 3 writes, the first row scrolls out because the cursor wraps past the last row
         ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
 
         tb.writeText("1111");
@@ -165,6 +168,7 @@ class ScrollbackTest {
 
     @Test
     void getLineFromScrollbackReturnsEmptyLineStringIfAccessedLineIsEmpty() {
+        // accessing an unwritten scrollback row returns a line of spaces
         ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
         assertEquals("    ", tb.getLineFromScrollback(5));
     }
@@ -172,6 +176,7 @@ class ScrollbackTest {
 
     @Test
     void getAttributesFromScrollbackPositionReturnsNull() {
+        // accessing attributes of an unwritten scrollback position returns null
         ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
         assertNull(tb.getAttributesFromScrollbackAt(5, 2));
     }

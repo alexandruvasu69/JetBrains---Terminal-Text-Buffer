@@ -14,6 +14,8 @@ class InsertTextTest {
 
     @Test
     void insertTextDisplacesExistingContent() {
+        // screen="33333", insert "text" at col 0 -> "text3" overflows to scrollback,
+        // the remaining "3333" stays on screen (one '3' was pushed off with the overflow)
         ITerminalBuffer tb = new TerminalBuffer(5, 1, 10);
         tb.fillLine('3');
         tb.setCursorPosition(0, 0);
@@ -24,6 +26,8 @@ class InsertTextTest {
 
     @Test
     void insertTextDisplacesMultipleLines() {
+        // both rows filled with '3', insert "text" at (0,0)
+        // overflow cascades through both rows and triggers a scroll
         ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
         tb.fillLine('3');
         tb.setCursorPosition(1, 0);
@@ -38,6 +42,8 @@ class InsertTextTest {
 
     @Test
     void insertTextInMiddleOfLine() {
+        // "ABCD_" with "xy" inserted at col 2 -> "ABxyC" fills the row,
+        // "D" overflows to the next row (which triggers a scroll on height=1)
         ITerminalBuffer tb = new TerminalBuffer(5, 1, 10);
         tb.writeText("ABCD");
         tb.setCursorPosition(0, 2);
@@ -92,6 +98,8 @@ class InsertTextTest {
 
     @Test
     void insertTextWrapsAcrossMultipleLinesOnEmptyScreen() {
+        // on an empty screen, insertText behaves like writeText since
+        // there is no existing content to shift
         ITerminalBuffer tb = new TerminalBuffer(4, 3, 10);
 
         tb.insertText("123456789");
@@ -103,6 +111,9 @@ class InsertTextTest {
 
     @Test
     void insertTextScrollsWhenScreenIsFull() {
+        // row 0="ABCD", row 1="EEEE" (cursor on row 1 after writeText, then fillLine)
+        // insert "X" at (0,0) -> row 0="XABC", overflow "D" cascades into row 1,
+        // which is full, causing a scroll
         ITerminalBuffer tb = new TerminalBuffer(4, 2, 10);
         tb.writeText("ABCD");
         tb.fillLine('E');
@@ -130,6 +141,7 @@ class InsertTextTest {
 
     @Test
     void insertTextWithSpacesInsertsSpacesToo() {
+        // spaces are treated as regular characters, not as empty cells
         ITerminalBuffer tb = new TerminalBuffer(5, 2, 10);
         tb.writeText("ABCDE");
         tb.setCursorPosition(0, 2);
