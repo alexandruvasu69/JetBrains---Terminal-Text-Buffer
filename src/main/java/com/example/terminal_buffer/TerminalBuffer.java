@@ -105,15 +105,28 @@ public class TerminalBuffer implements ITerminalBuffer{
      * reversed into correct left-to-right order, and recursively flushed to subsequent rows.
      *
      * @param text the text to insert
+     * @throws IllegalArgumentException if input text is empty or null
      */
     @Override
     public void insertText(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException("Text must not be null!");
+        }
+        if (text.length() == 0) {
+            throw new IllegalArgumentException("Text must not be empty!");
+        }
+
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
         List<ICell> overflow = new ArrayList<>();
+        int lastInsertRow = cursor.getRowPosition();
 
         for (int i = 0; i < text.length(); i++) {
+            int row = cursor.getRowPosition();
+            int col = cursor.getColumnPosition();
+
             char c = text.charAt(i);
-            ICell cell = screen.insertCell(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
+            ICell cell = screen.insertCell(c, attributes, row, col);
+            lastInsertRow = row;
             overflow.add(cell);
 
             moveCursorNext();
@@ -124,9 +137,8 @@ public class TerminalBuffer implements ITerminalBuffer{
         overflow.removeIf(ICell::isEmpty);
         if (!overflow.isEmpty()) {
             int nextRow;
-            int insertRow = cursor.getRowPosition();
-            if (cursor.getRowPosition() < screen.getHeight() - 1) {
-                nextRow = insertRow + 1;
+            if (lastInsertRow < screen.getHeight() - 1) {
+                nextRow = lastInsertRow + 1;
             } else {
                 insertEmptyLine();
                 nextRow = screen.getHeight() - 1;
