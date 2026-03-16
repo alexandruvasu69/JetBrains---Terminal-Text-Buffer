@@ -45,7 +45,8 @@ public class Screen implements IScreen {
     @Override
     public ICell insertCell(char character, CellAttributes attributes, int row, int col) {
         int physicalRow = toPhysicalRow(row);
-        ICell lastCell = Cell.cloneFrom(grid[physicalRow][width-1]);
+        ICell lastCell = grid[physicalRow][width - 1];
+        ICell lastCellCopy = Cell.cloneFrom(lastCell);
 
         for (int indexCol = width - 1; indexCol > col; indexCol--) {
             grid[physicalRow][indexCol] = grid[physicalRow][indexCol - 1];
@@ -54,7 +55,7 @@ public class Screen implements IScreen {
         ICell cell = new Cell(character, attributes);
         this.grid[physicalRow][col] = cell;
 
-        return lastCell;
+        return lastCellCopy;
     }
 
     @Override
