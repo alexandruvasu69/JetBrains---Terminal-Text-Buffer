@@ -28,6 +28,16 @@ public class TerminalBuffer implements ITerminalBuffer{
     private CursorManager cursorManager;
 
     public TerminalBuffer(int width, int height, int scrollBackMaxSize) {
+        if (width <= 0) {
+            throw new IllegalArgumentException("Width must be greater than 0, got: " + width);
+        }
+        if (height <= 0) {
+            throw new IllegalArgumentException("Height must be greater than 0, got: " + height);
+        }
+        if (scrollBackMaxSize < 0) {
+            throw new IllegalArgumentException("ScrollBack max size must be >= 0, got: " + scrollBackMaxSize);
+        }
+
         this.screen = new Screen(width, height);
         this.scrollback = new Scrollback(width, scrollBackMaxSize);
         this.cellAttributes = CellAttributes.getDefaultAttributes();
