@@ -15,6 +15,15 @@ class WriteTextTest {
     }
 
     @Test
+    void cursorMovesAfterWriteText() {
+        ITerminalBuffer tb = new TerminalBuffer(5, 3, 10);
+        tb.writeText("ABC");
+
+        assertEquals(0, tb.getCursorRow());
+        assertEquals(3, tb.getCursorColumn());
+    }
+
+    @Test
     void writeTextWrapsToNextLine() {
         // if the remaining text overflows the line,
         // the cursor moves on the next line and continues writing
