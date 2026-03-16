@@ -202,9 +202,13 @@ public class TerminalBuffer implements ITerminalBuffer{
      * using the current cell attributes.
      *
      * @param character the character to fill the row with
+     * @throws IllegalArgumentException if input contains special whitespace characters('\n','\t','\r')
      */
     @Override
     public void fillLine(char character) {
+        if (character == '\n' || character == '\t' || character == '\r') {
+            throw new IllegalArgumentException();
+        }
         int currentRow = this.cursor.getRowPosition();
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
         screen.fillLine(character, attributes, currentRow);
