@@ -138,8 +138,17 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public void insertEmptyLine() {
-        ICell[] cell = this.screen.insertEmptyLine();
-        this.scrollback.addLine(cell);
+        ICell[] cells = this.screen.insertEmptyLine();
+        boolean allEmpty = true;
+        for (ICell cell : cells) {
+            if (!cell.isEmpty()) {
+                allEmpty = false;
+                break;
+            }
+        }
+        if (!allEmpty) {
+            this.scrollback.addLine(cells);
+        }
     }
 
     @Override
