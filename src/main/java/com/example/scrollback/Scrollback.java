@@ -1,5 +1,6 @@
 package com.example.scrollback;
 
+import com.example.cell.Cell;
 import com.example.cell.ICell;
 import com.example.cell.ICellAttributes;
 import com.example.shared.TerminalRenderer;
@@ -76,21 +77,56 @@ public class Scrollback implements IScrollback{
 
     @Override
     public String getLineAsString(int row) {
+        if (row < 0 || row >= this.maxSize) {
+            throw new IllegalArgumentException();
+        }
+
+        int physicalIndex = (getOldest() + row) % maxSize;
+        ICell[] line = grid[physicalIndex];
+
+        if (line[0] == null) {
+            return String.valueOf(Cell.EMTPTY_CHAR).repeat(width);
+        }
+
+
         TerminalRenderer tr = new TerminalRenderer();
-        tr.appendLine(grid[row]);
+        tr.appendLine(grid[physicalIndex]);
 
         return tr.build();
     }
 
     @Override
     public char getCharacterAt(int row, int col) {
-        return grid[row][col].getCharacter();
+        if (row < 0 || col < 0 || row >= this.maxSize || col >= this.width) {
+            throw new IllegalArgumentException();
+        }
+
+        int physicalIndex = (getOldest() + row) % maxSize;
+        ICell[] line = grid[physicalIndex];
+
+        if (line[0] == null) {
+            return Cell.EMTPTY_CHAR;
+        }
+
+        return line[col].getCharacter();
     }
 
 
     @Override
     public ICellAttributes getAttributesAt(int row, int col) {
-        return this.grid[row][col].getAttributes();
+        if (row < 0 || col < 0 || row >= this.maxSize || col >= this.width) {
+            throw new IllegalArgumentException();
+        }
+
+        int physicalIndex = (getOldest() + row) % maxSize;
+        ICell[] line = grid[physicalIndex];
+
+        if (line[0] == null) {
+            return null;
+        }
+
+
+        return line[col].getAttributes();
     }
 
     private void moveNext() {

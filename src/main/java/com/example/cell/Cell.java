@@ -1,7 +1,7 @@
 package com.example.cell;
 
 public class Cell implements ICell {
-    private final static char EMTPTY_CHAR = ' ';
+    public final static char EMTPTY_CHAR = ' ';
     private char character;
     private CellAttributes attributes;
     
