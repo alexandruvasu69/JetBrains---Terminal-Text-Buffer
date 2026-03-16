@@ -87,4 +87,14 @@ public class CursorManager implements ICursorOps {
             }
         }
     }
+
+    @Override
+    public int getCursorRow() {
+        return this.cursor.getRowPosition();
+    }
+
+    @Override
+    public int getCursorColumn() {
+        return this.cursor.getColumnPosition();
+    }
 }

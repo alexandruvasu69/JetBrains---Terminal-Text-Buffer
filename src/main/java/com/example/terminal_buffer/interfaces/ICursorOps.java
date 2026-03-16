@@ -12,4 +12,8 @@ public interface ICursorOps {
     void setCursorRow(int row) throws RuntimeException;
     void setCursorColumn(int col) throws RuntimeException;
     void setCursorPosition(int row, int col) throws RuntimeException;
+
+    // getters
+    int getCursorRow();
+    int getCursorColumn();
 }
