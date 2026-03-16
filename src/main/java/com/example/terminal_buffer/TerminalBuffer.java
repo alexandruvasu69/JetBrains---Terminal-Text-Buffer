@@ -80,9 +80,17 @@ public class TerminalBuffer implements ITerminalBuffer{
      * screen, a scroll is triggered and writing continues on the new bottom row.
      *
      * @param text the text to write
+     * @throws IllegalArgumentException if input text is empty or null
      */
     @Override
     public void writeText(String text) {
+        if (text == null) {
+            throw new IllegalArgumentException("Text must not be null!");
+        }
+        if (text.length() == 0) {
+            throw new IllegalArgumentException("Text must not be empty!");
+        }
+
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
