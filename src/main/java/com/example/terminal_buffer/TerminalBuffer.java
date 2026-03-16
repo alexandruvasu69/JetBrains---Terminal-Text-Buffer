@@ -1,5 +1,9 @@
 package com.example.terminal_buffer;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.example.cell.CellAttributes;
 import com.example.cell.ICell;
 import com.example.cell.ICellAttributes;
@@ -18,7 +22,7 @@ import com.example.terminal_buffer.helpers.CursorManager;
 public class TerminalBuffer implements ITerminalBuffer{
     private IScreen screen;
     private ICursor cursor;
-    private IScrollback scrollback; 
+    private IScrollback scrollback;
     private CellAttributes cellAttributes;
     private BoundsValidator validator;
     private CursorManager cursorManager;
@@ -32,12 +36,8 @@ public class TerminalBuffer implements ITerminalBuffer{
         this.cursorManager = new CursorManager(this.cursor, this.screen, this.validator);
     }
 
-    public TerminalBuffer(int width, int height, int scrollBackMaxSize, ICursor cursor) {
-        this(width, height, scrollBackMaxSize);
-        this.cursor = cursor;
-    }
+    // SCREEN OPERATIONS
 
-    // screen operations
     @Override
     public int getScreenWidth() {
         return screen.getWidth();
@@ -50,7 +50,7 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     @Override
     public void writeText(String text) {
-        CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes); 
+        CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             screen.writeCell(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
@@ -61,27 +61,66 @@ public class TerminalBuffer implements ITerminalBuffer{
     @Override
     public void insertText(String text) {
         CellAttributes attributes = CellAttributes.cloneFrom(cellAttributes);
+        List<ICell> overflow = new ArrayList<>();
+
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
-            insertChar(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
+            ICell cell = screen.insertCell(c, attributes, cursor.getRowPosition(), cursor.getColumnPosition());
+            overflow.add(cell);
+
             moveCursorNext();
+        }
+    
+
+        Collections.reverse(overflow);
+        overflow.removeIf(ICell::isEmpty);
+        if (!overflow.isEmpty()) {
+            int nextRow;
+            int insertRow = cursor.getRowPosition();
+            if (cursor.getRowPosition() < screen.getHeight() - 1) {
+                nextRow = insertRow + 1;
+            } else {
+                insertEmptyLine();
+                nextRow = screen.getHeight() - 1;
+            }
+            flushOverflow(overflow, nextRow, 0);
         }
     }
 
-    private void insertChar(char c, CellAttributes attributes, int row, int col) {
-        ICell lastCell = screen.insertCell(c, attributes, row, col);
+    private void flushOverflow(List<ICell> overflow, int row, int col) {
+        if (overflow.isEmpty()) return;
 
-        if (lastCell.isEmpty()) {
-            return;
+        List<ICell> pushedOff = new ArrayList<>();
+        List<ICell> remaining = new ArrayList<>();
+        int currentCol = col;
+
+        for (int i = 0; i < overflow.size(); i++) {
+            if (currentCol >= screen.getWidth()) {
+                remaining = new ArrayList<>(overflow.subList(i, overflow.size()));
+                break;
+            }
+            ICell pushed = screen.insertCell(
+                overflow.get(i).getCharacter(),
+                overflow.get(i).getAttributes(),
+                row, currentCol);
+            pushedOff.add(pushed);
+            currentCol++;
         }
 
-        int nextRow = row + 1;
+        Collections.reverse(pushedOff);
+        List<ICell> newOverflow = new ArrayList<>(remaining);
+        newOverflow.addAll(pushedOff);
+        newOverflow.removeIf(ICell::isEmpty);
 
-        if (!validator.isScreenPositionOutOfBounds(nextRow, 0)) {
-            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), nextRow, 0);
-        } else {
-            insertEmptyLine();
-            insertChar(lastCell.getCharacter(), lastCell.getAttributes(), screen.getHeight() - 1, 0);
+        if (!newOverflow.isEmpty()) {
+            int nextRow;
+            if (row < screen.getHeight() - 1) {
+                nextRow = row + 1;
+            } else {
+                insertEmptyLine();
+                nextRow = screen.getHeight() - 1;
+            }
+            flushOverflow(newOverflow, nextRow, 0);
         }
     }
 
@@ -190,7 +229,23 @@ public class TerminalBuffer implements ITerminalBuffer{
 
     // CURSOR OPERATIONS
     private void moveCursorNext() {
-        this.cursorManager.moveCursorNext();
+        int row = cursor.getRowPosition();
+        int col = cursor.getColumnPosition();
+
+        if (col < screen.getWidth() - 1) {
+            cursor.setColumnPosition(col + 1);
+            return;
+        }
+
+        if (row < screen.getHeight() - 1) {
+            cursor.setRowPosition(row + 1);
+            cursor.setColumnPosition(0);
+            return;
+        }
+
+        insertEmptyLine();
+        cursor.setRowPosition(screen.getHeight() - 1);
+        cursor.setColumnPosition(0);
     }
 
     @Override
@@ -242,6 +297,6 @@ public class TerminalBuffer implements ITerminalBuffer{
         return sb.toString();
     }
 
-    
-    
+
+
 }
