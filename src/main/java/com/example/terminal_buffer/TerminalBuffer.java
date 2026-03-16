@@ -258,6 +258,16 @@ public class TerminalBuffer implements ITerminalBuffer{
     }
 
     @Override
+    public int getCursorRow() {
+        return this.cursorManager.getCursorRow();
+    }
+
+    @Override
+    public int getCursorColumn() {
+        return this.cursorManager.getCursorColumn();
+    }
+
+    @Override
     public void moveCursorDown(int offset) throws OutOfBoundsException, OffsetValueException {
         this.cursorManager.moveCursorDown(offset);
     }
